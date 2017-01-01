@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import io.github.mssjsg.pong.screen.MenuScreen;
 import io.github.mssjsg.pong.screen.Screen;
 import io.github.mssjsg.pong.screen.ScreenManager;
+import io.github.mssjsg.pong.screen.Screens;
 
 /**
  * Created by sing on 12/31/16.
@@ -19,7 +20,7 @@ public class GameController extends ApplicationAdapter {
     @Override
     public void create() {
         super.create();
-        mScreenManager.setScreen(new MenuScreen(mScreenManager));
+        mScreenManager.setScreen(Screens.createMenuScreen(mScreenManager));
     }
 
     @Override

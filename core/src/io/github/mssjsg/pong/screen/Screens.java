@@ -8,11 +8,11 @@ public final class Screens {
 
     private Screens() {}
 
-    public static Screen createMenuScreen(Screen context) {
-        return new MenuScreen(context.mScreenManager);
+    public static Screen createMenuScreen(ScreenManager manager) {
+        return new MenuScreen(manager);
     }
 
-    public static Screen createGameScreen(Screen context) {
-        return new GameScreen(context.mScreenManager);
+    public static Screen createGameScreen(ScreenManager manager) {
+        return new GameScreen(manager);
     }
 }

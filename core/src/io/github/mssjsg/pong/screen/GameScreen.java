@@ -5,17 +5,24 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 
+import io.github.mssjsg.pong.pong.PongController;
+
 /**
  * Created by sing on 12/31/16.
  */
 
 public class GameScreen extends Screen {
 
+    private static final int VIEWPORT_WIDTH = 640;
+    private static final int VIEWPORT_HEIGHT = 400;
+
     private GameInputProcessor mGameInputProcessor;
+    private PongController mPongController;
 
     public GameScreen(ScreenManager screenManager) {
         super(screenManager);
         mGameInputProcessor = new GameInputProcessor();
+        mPongController = new PongController(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
     }
 
     @Override
@@ -28,10 +35,35 @@ public class GameScreen extends Screen {
         super.render(delta);
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        mPongController.render(delta);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        mPongController.resize(width, height);
+    }
+
+    @Override
+    public void pause() {
+        super.pause();
+        mPongController.pause();
+    }
+
+    @Override
+    public void resume() {
+        super.resume();
+        mPongController.resume();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        mPongController.dispose();
     }
 
     private void back() {
-        setScreen(Screens.createMenuScreen(this));
+        setScreen(Screens.createMenuScreen(mScreenManager));
     }
 
     private class GameInputProcessor implements InputProcessor {
