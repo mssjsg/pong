@@ -1,22 +1,24 @@
 package io.github.mssjsg.pong.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Array;
 
 import io.github.mssjsg.pong.game.component.Body;
 import io.github.mssjsg.pong.game.component.DisplayBody;
 import io.github.mssjsg.pong.game.component.Position;
+import io.github.mssjsg.pong.game.component.ShapeStyle;
+import io.github.mssjsg.pong.game.system.RenderShapeSystem;
 
 /**
  * Created by sing on 1/1/17.
  */
 
 public class PongController {
-    private OrthographicCamera camera;
+    private OrthographicCamera mCamera;
     private SpriteBatch mSpriteBatch;
     private ShapeRenderer mShapeRenderer;
 
@@ -24,86 +26,108 @@ public class PongController {
 
     private GameState mGameState;
 
-    private int mStageWidth = 600;
-    private int mStageHeight = 600;
+    private StageInfo mStageInfo;
 
-    private ComponentSystemManager mComponentSystemManager;
+    private RenderShapeSystem mRenderShapeSystem;
 
     public PongController() {
-        mComponentSystemManager = new ComponentSystemManager();
-        mComponentSystemManager.addSystem(new DisplayBodySystem(mShapeRenderer));
-
         mGameState = new GameState();
         mSpriteBatch = new SpriteBatch();
         mShapeRenderer = new ShapeRenderer();
 
+        mStageInfo = new StageInfo();
+        mStageInfo.stageHeight = 600;
+        mStageInfo.stageWidth = 600;
+
         mLogo = new Texture("badlogic.jpg");
 
-        initCamera(mStageWidth / 2, mStageHeight / 2);
+        initCamera(mStageInfo.stageWidth / 2, mStageInfo.stageHeight / 2);
+        mRenderShapeSystem = new RenderShapeSystem(mCamera, mShapeRenderer);
+
         initGame();
     }
 
     private void initCamera(float cameraPosX, float cameraPosY) {
-        camera = new OrthographicCamera();
-        camera.position.set(cameraPosX, cameraPosY, 0);
-        camera.update();
+        float width = mStageInfo.stageWidth;
+        float height = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth() * width;
+
+        mCamera = new OrthographicCamera(width, height);
+        mCamera.position.set(cameraPosX, cameraPosY, 0);
+        mCamera.update();
     }
 
     private void initStage() {
 
-        DisplayBody displayBody = new DisplayBody(Body.SHAPE_RECT, Color.YELLOW);
+        DisplayBody displayBody = new DisplayBody();
+        displayBody.width = mStageInfo.stageWidth;
+        displayBody.height = mStageInfo.stageHeight;
 
-        new GameObjectBuilder(mComponentSystemManager)
+        ShapeStyle shapeStyle = new ShapeStyle();
+        shapeStyle.color = Color.CLEAR;
+
+        Entity entity = new Entity()
                 .addComponent(new Position(0, 0))
-                .addComponent(displayBody).build();
+                .addComponent(displayBody)
+                .addComponent(shapeStyle);
+
+        mRenderShapeSystem.addEntity(entity);
     }
 
     private void initGame() {
         initStage();
 
-        float stageCenterX = mStageWidth / 2;
-        float stageCenterY = mStageHeight / 2;
+        float stageCenterX = mStageInfo.stageWidth / 2;
+        float stageCenterY = mStageInfo.stageHeight / 2;
 
         //create ball
-        DisplayBody displayBody = new DisplayBody(Body.SHAPE_CIRCLE, Color.BLUE);
-        displayBody.width = 10;
-        displayBody.height = 10;
+        DisplayBody displayBody = new DisplayBody();
+        displayBody.width = 100;
+        displayBody.height = 100;
         displayBody.centerX = 5;
         displayBody.centerY = 5;
+        displayBody.shape = Body.SHAPE_CIRCLE;
 
-        new GameObjectBuilder(mComponentSystemManager)
+        ShapeStyle shapeStyle = new ShapeStyle();
+        shapeStyle.color = Color.YELLOW;
+
+        Entity entity = new Entity()
                 .addComponent(new Position(stageCenterX, stageCenterY))
-                .addComponent(displayBody).build();
+                .addComponent(displayBody)
+                .addComponent(shapeStyle);
+
+        mRenderShapeSystem.addEntity(entity);
 
         //create racket left
-        displayBody = new DisplayBody(Body.SHAPE_RECT, Color.RED);
+        displayBody = new DisplayBody();
         displayBody.width = 10;
         displayBody.height = 50;
         displayBody.centerX = 0;
         displayBody.centerY = 25;
 
-        new GameObjectBuilder(mComponentSystemManager)
+        shapeStyle = new ShapeStyle();
+        shapeStyle.color = Color.RED;
+
+        entity = new Entity()
                 .addComponent(new Position(10, 300))
-                .addComponent(displayBody).build();
+                .addComponent(displayBody)
+                .addComponent(shapeStyle);
+
+        mRenderShapeSystem.addEntity(entity);
     }
 
     public void resize(int width, int height) {
-        camera.viewportWidth = mStageWidth;
-        camera.viewportHeight = (float)height / (float) width * mStageWidth;
-        camera.update();
+        mCamera.viewportWidth = mStageInfo.stageWidth;
+        mCamera.viewportHeight = (float)height / (float) width * mStageInfo.stageWidth;
+        mCamera.update();
     }
 
     public void render(float delta) {
-        mSpriteBatch.setProjectionMatrix(camera.combined);
+        mSpriteBatch.setProjectionMatrix(mCamera.combined);
         mSpriteBatch.begin();
-        mSpriteBatch.draw(mLogo, (mStageWidth - mLogo.getWidth()) / 2, (mStageHeight - mLogo.getHeight()) / 2);
+        mSpriteBatch.draw(mLogo, (mStageInfo.stageWidth - mLogo.getWidth()) / 2, (mStageInfo.stageHeight - mLogo.getHeight()) / 2);
         mSpriteBatch.end();
 
-        mShapeRenderer.setProjectionMatrix(camera.combined);
-        mShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        mShapeRenderer.setColor(1, 1, 0, 0);
-        mShapeRenderer.rect(0, 0, 10, 400);
-        mShapeRenderer.end();
+        mRenderShapeSystem.update(delta);
     }
 
     public void pause() {
