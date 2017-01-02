@@ -10,11 +10,7 @@ public class DisplayBody extends Body {
 
     public Color color;
 
-    public DisplayBody(int id) {
-        super(id);
-    }
-
-    public DisplayBody(int id, int shape) {
-        super(id, shape);
+    public DisplayBody(int shape) {
+        super(shape);
     }
 }

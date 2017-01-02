@@ -5,7 +5,6 @@ package io.github.mssjsg.pong.game.component;
  */
 
 public class Position extends Component {
-    public Position(int id) {
-        super(id);
-    }
+    public float x;
+    public float y;
 }

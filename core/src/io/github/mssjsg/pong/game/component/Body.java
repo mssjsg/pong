@@ -16,12 +16,11 @@ public class Body extends Component {
     public float centerY;
     public int shape;
 
-    public Body(int id) {
-        this(id, SHAPE_RECT);
+    public Body() {
+        this(SHAPE_RECT);
     }
 
-    public Body(int id, int shape) {
-        super(id);
+    public Body(int shape) {;
         this.shape = shape;
     }
 }

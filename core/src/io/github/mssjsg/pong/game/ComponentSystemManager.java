@@ -1,6 +1,5 @@
 package io.github.mssjsg.pong.game;
 
-import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 
@@ -39,6 +38,14 @@ public class ComponentSystemManager {
     }
 
     public void addComponents(int id, Component... components) {
+
+        Array<Component> objectComponents = mObjectMap.get(id);
+
+        if (objectComponents == null) {
+            objectComponents = new Array<Component>();
+            mObjectMap.put(id, objectComponents);
+        }
+
         for (Component component : components) {
             Array<Component> list = mComponentListMap.get(component.getClass());
 
@@ -49,12 +56,30 @@ public class ComponentSystemManager {
 
             list.add(component);
 
-            Array<Component> objectComponents = mObjectMap.get(id);
+            objectComponents.add(component);
+        }
+    }
 
-            if (objectComponents == null) {
-                
+    public void removeComponents(int id, Component... components) {
+        Array<Component> objectComponents = mObjectMap.get(id);
+
+        for (Component component : components) {
+            Array<Component> list = mComponentListMap.get(component.getClass());
+
+            if (list != null) {
+                list.removeValue(component, true);
+            }
+
+            if (objectComponents != null) {
+                objectComponents.removeValue(component, true);
             }
         }
+    }
+
+    public int addObject(Component... components) {
+        int id = mObjectMap.size;
+        addComponents(id, components);
+        return id;
     }
 
     public void reset() {
@@ -62,4 +87,5 @@ public class ComponentSystemManager {
         mComponentListMap = new ArrayMap<Class<? extends Component>, Array<Component>>();
         mObjectMap = new ArrayMap<Integer, Array<Component>>();
     }
+
 }

@@ -7,8 +7,4 @@ package io.github.mssjsg.pong.game.component;
 public class Velocity extends Component {
     public static float x;
     public static float y;
-
-    public Velocity(int id) {
-        super(id);
-    }
 }

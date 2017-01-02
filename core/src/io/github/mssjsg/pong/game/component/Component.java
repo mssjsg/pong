@@ -5,7 +5,5 @@ package io.github.mssjsg.pong.game.component;
  */
 
 public class Component {
-    public final int id;
 
-    public Component(int id) {this.id = id;}
 }
