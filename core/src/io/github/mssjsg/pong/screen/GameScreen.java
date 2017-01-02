@@ -22,7 +22,7 @@ public class GameScreen extends Screen {
     public GameScreen(ScreenManager screenManager) {
         super(screenManager);
         mGameInputProcessor = new GameInputProcessor();
-        mPongController = new PongController(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+        mPongController = new PongController();
     }
 
     @Override

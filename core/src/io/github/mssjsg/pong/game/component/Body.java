@@ -20,7 +20,7 @@ public class Body extends Component {
         this(SHAPE_RECT);
     }
 
-    public Body(int shape) {;
+    public Body(int shape) {
         this.shape = shape;
     }
 }

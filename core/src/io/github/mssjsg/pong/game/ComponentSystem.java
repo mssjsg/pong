@@ -16,6 +16,10 @@ public abstract class ComponentSystem<T extends Component> {
         mComponentClass = componentClass;
     }
 
+    public Class<T> getComponentClass() {
+        return mComponentClass;
+    }
+
     public boolean canHandleComponent(Component component) {
         return component.getClass() == mComponentClass;
     }

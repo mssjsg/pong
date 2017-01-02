@@ -29,8 +29,8 @@ public class ComponentSystemManager {
         }
     }
 
-    public <T extends Component> void addSystem(Class<T> c, ComponentSystem<T> system) {
-        mComponentSystems.put(c, system);
+    public <T extends Component> void addSystem(ComponentSystem<T> system) {
+        mComponentSystems.put(system.getComponentClass(), system);
     }
 
     public void removeSystem(ComponentSystem<?> system) {

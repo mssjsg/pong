@@ -10,7 +10,8 @@ public class DisplayBody extends Body {
 
     public Color color;
 
-    public DisplayBody(int shape) {
+    public DisplayBody(int shape, Color color) {
         super(shape);
+        this.color = color;
     }
 }

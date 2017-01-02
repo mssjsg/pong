@@ -30,6 +30,6 @@ public class GameObjectBuilder {
 
         Array<Component> components = mComponents;
         mComponents = null;
-        return mComponentSystemManager.addObject(components.toArray());
+        return mComponentSystemManager.addObject((Component[]) components.toArray(Component.class));
     }
 }

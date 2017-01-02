@@ -5,5 +5,4 @@ package io.github.mssjsg.pong.game.component;
  */
 
 public class Component {
-
 }

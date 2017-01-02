@@ -5,6 +5,11 @@ package io.github.mssjsg.pong.game.component;
  */
 
 public class Velocity extends Component {
-    public static float x;
-    public static float y;
+    public float x;
+    public float y;
+
+    public Velocity(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
 }
