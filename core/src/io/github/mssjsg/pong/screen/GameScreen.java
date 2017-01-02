@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 
-import io.github.mssjsg.pong.pong.PongController;
+import io.github.mssjsg.pong.game.PongController;
 
 /**
  * Created by sing on 12/31/16.
