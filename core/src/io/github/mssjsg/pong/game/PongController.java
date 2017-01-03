@@ -7,10 +7,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import io.github.mssjsg.pong.game.component.Body;
 import io.github.mssjsg.pong.game.component.DisplayBody;
+import io.github.mssjsg.pong.game.component.HitBody;
 import io.github.mssjsg.pong.game.component.Position;
-import io.github.mssjsg.pong.game.component.ShapeStyle;
+import io.github.mssjsg.pong.game.shape.Ellipse;
+import io.github.mssjsg.pong.game.shape.Rectangle;
 import io.github.mssjsg.pong.game.system.RenderShapeSystem;
 
 /**
@@ -58,17 +59,17 @@ public class PongController {
 
     private void initStage() {
 
-        DisplayBody displayBody = new DisplayBody();
-        displayBody.width = mStageInfo.stageWidth;
-        displayBody.height = mStageInfo.stageHeight;
+        Rectangle rectangle = new Rectangle();
+        rectangle.width = mStageInfo.stageWidth;
+        rectangle.height = mStageInfo.stageHeight;
 
-        ShapeStyle shapeStyle = new ShapeStyle();
-        shapeStyle.color = Color.CLEAR;
+        DisplayBody displayBody = new DisplayBody();
+        displayBody.shape = rectangle;
+        displayBody.color = Color.CLEAR;
 
         Entity entity = new Entity()
                 .addComponent(new Position(0, 0))
-                .addComponent(displayBody)
-                .addComponent(shapeStyle);
+                .addComponent(displayBody);
 
         mRenderShapeSystem.addEntity(entity);
     }
@@ -80,38 +81,78 @@ public class PongController {
         float stageCenterY = mStageInfo.stageHeight / 2;
 
         //create ball
+        Ellipse ellipse = new Ellipse();
+        ellipse.width = 10;
+        ellipse.height = 10;
+
         DisplayBody displayBody = new DisplayBody();
-        displayBody.width = 100;
-        displayBody.height = 100;
+        displayBody.shape = ellipse;
         displayBody.centerX = 5;
         displayBody.centerY = 5;
-        displayBody.shape = Body.SHAPE_CIRCLE;
-
-        ShapeStyle shapeStyle = new ShapeStyle();
-        shapeStyle.color = Color.YELLOW;
+        displayBody.color = Color.YELLOW;
 
         Entity entity = new Entity()
                 .addComponent(new Position(stageCenterX, stageCenterY))
                 .addComponent(displayBody)
-                .addComponent(shapeStyle);
+                .addComponent(new HitBody(displayBody));
 
         mRenderShapeSystem.addEntity(entity);
 
+        int length = 50;
+        int thickness = 10;
+
+        Rectangle rectLeft = new Rectangle();
+        rectLeft.width = length;
+        rectLeft.height = thickness;
+
+        Rectangle rectTop = new Rectangle();
+        rectTop.width = thickness;
+        rectTop.height = length;
+
+        Rectangle rectRight = rectLeft.copy();
+        Rectangle rectBottom = rectTop.copy();
+
         //create racket left
         displayBody = new DisplayBody();
-        displayBody.width = 10;
-        displayBody.height = 50;
-        displayBody.centerX = 0;
-        displayBody.centerY = 25;
+        displayBody.shape = rectLeft;
+        displayBody.centerX = length / 2;
+        displayBody.centerY = 0;
+        displayBody.color = Color.RED;
 
-        shapeStyle = new ShapeStyle();
-        shapeStyle.color = Color.RED;
+        addRacket(0, mStageInfo.stageHeight / 2, displayBody);
+        //right
+        displayBody = new DisplayBody();
+        displayBody.shape = rectRight;
+        displayBody.centerX = thickness;
+        displayBody.centerY = length / 2;
+        displayBody.color = Color.RED;
 
-        entity = new Entity()
-                .addComponent(new Position(10, 300))
+        addRacket(mStageInfo.stageWidth, mStageInfo.stageHeight / 2, displayBody);
+
+        //top
+        displayBody = new DisplayBody();
+        displayBody.shape = rectTop;
+        displayBody.centerX = length / 2;
+        displayBody.centerY = thickness;
+        displayBody.color = Color.RED;
+
+        addRacket(mStageInfo.stageWidth / 2, 0, displayBody);
+
+        //bottom
+        displayBody = new DisplayBody();
+        displayBody.shape = rectBottom;
+        displayBody.centerX = length / 2;
+        displayBody.centerY = 0;
+        displayBody.color = Color.RED;
+
+        addRacket(mStageInfo.stageWidth / 2, mStageInfo.stageHeight, displayBody);
+    }
+
+    private void addRacket(float x, float y, DisplayBody displayBody) {
+        Entity entity = new Entity()
                 .addComponent(displayBody)
-                .addComponent(shapeStyle);
-
+                .addComponent(new Position(x, y))
+                .addComponent(new HitBody(displayBody));
         mRenderShapeSystem.addEntity(entity);
     }
 

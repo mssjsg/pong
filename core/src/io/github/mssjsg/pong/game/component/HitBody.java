@@ -5,4 +5,16 @@ package io.github.mssjsg.pong.game.component;
  */
 
 public class HitBody extends Body {
+
+    public HitBody() {
+    }
+
+    public HitBody(Body body) {
+        super(body);
+    }
+
+    @Override
+    protected Body createObject() {
+        return new HitBody();
+    }
 }
