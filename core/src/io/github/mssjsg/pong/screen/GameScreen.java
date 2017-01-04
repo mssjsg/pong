@@ -13,9 +13,6 @@ import io.github.mssjsg.pong.game.PongController;
 
 public class GameScreen extends Screen {
 
-    private static final int VIEWPORT_WIDTH = 640;
-    private static final int VIEWPORT_HEIGHT = 400;
-
     private GameInputProcessor mGameInputProcessor;
     private PongController mPongController;
 

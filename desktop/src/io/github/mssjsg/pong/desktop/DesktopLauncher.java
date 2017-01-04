@@ -10,8 +10,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Pong!";
-		config.width = 640;
-		config.height = 400;
+		config.width = 360;
+		config.height = 640;
 		new LwjglApplication(new GameController(), config);
 	}
 }

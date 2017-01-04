@@ -20,15 +20,12 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 public class MenuScreen extends Screen {
 
-    private static final int VIEWPORT_GUI_WIDTH = 640;
-    private static final int VIEWPORT_GUI_HEIGHT = 400;
-
     private Stage stage;
     private Skin skin;
 
     public MenuScreen(ScreenManager screenManager) {
         super(screenManager);
-        stage = new Stage(new ExtendViewport(VIEWPORT_GUI_WIDTH, VIEWPORT_GUI_HEIGHT));
+        stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         buildStage();
     }
 
@@ -43,7 +40,7 @@ public class MenuScreen extends Screen {
         stage.clear();
         Stack stack = new Stack();
         stage.addActor(stack);
-        stack.setSize(VIEWPORT_GUI_WIDTH, VIEWPORT_GUI_HEIGHT);
+        stack.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stack.add(layerControls);
     }
 

@@ -102,12 +102,12 @@ public class PongController {
         int thickness = 10;
 
         Rectangle rectLeft = new Rectangle();
-        rectLeft.width = length;
-        rectLeft.height = thickness;
+        rectLeft.width = thickness;
+        rectLeft.height = length;
 
         Rectangle rectTop = new Rectangle();
-        rectTop.width = thickness;
-        rectTop.height = length;
+        rectTop.width = length;
+        rectTop.height = thickness;
 
         Rectangle rectRight = rectLeft.copy();
         Rectangle rectBottom = rectTop.copy();
@@ -115,8 +115,8 @@ public class PongController {
         //create racket left
         displayBody = new DisplayBody();
         displayBody.shape = rectLeft;
-        displayBody.centerX = length / 2;
-        displayBody.centerY = 0;
+        displayBody.centerX = 0;
+        displayBody.centerY = length / 2;
         displayBody.color = Color.RED;
 
         addRacket(0, mStageInfo.stageHeight / 2, displayBody);
@@ -133,7 +133,7 @@ public class PongController {
         displayBody = new DisplayBody();
         displayBody.shape = rectTop;
         displayBody.centerX = length / 2;
-        displayBody.centerY = thickness;
+        displayBody.centerY = 0;
         displayBody.color = Color.RED;
 
         addRacket(mStageInfo.stageWidth / 2, 0, displayBody);
@@ -142,7 +142,7 @@ public class PongController {
         displayBody = new DisplayBody();
         displayBody.shape = rectBottom;
         displayBody.centerX = length / 2;
-        displayBody.centerY = 0;
+        displayBody.centerY = thickness;
         displayBody.color = Color.RED;
 
         addRacket(mStageInfo.stageWidth / 2, mStageInfo.stageHeight, displayBody);
