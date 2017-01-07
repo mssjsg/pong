@@ -8,10 +8,11 @@ import io.github.mssjsg.pong.game.Entity;
  * Created by sing on 1/2/17.
  */
 
-public abstract class EntitySystem {
+public abstract class AbstractEntitySystem extends BaseSystem {
 
     private Array<Entity> mEntities = new Array<Entity>();
 
+    @Override
     public final void update(float delta) {
         onUpdate(delta, mEntities);
     }

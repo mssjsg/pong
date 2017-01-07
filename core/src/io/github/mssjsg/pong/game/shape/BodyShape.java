@@ -8,5 +8,5 @@ import io.github.mssjsg.pong.util.Copyable;
  * Created by sing on 1/3/17.
  */
 
-public abstract class Shape<S> implements Copyable<S> {
+public abstract class BodyShape<S> implements Copyable<S> {
 }

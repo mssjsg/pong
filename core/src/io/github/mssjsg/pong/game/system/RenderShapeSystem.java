@@ -7,14 +7,14 @@ import com.badlogic.gdx.utils.Array;
 import io.github.mssjsg.pong.game.Entity;
 import io.github.mssjsg.pong.game.component.DisplayBody;
 import io.github.mssjsg.pong.game.component.Position;
-import io.github.mssjsg.pong.game.shape.Ellipse;
+import io.github.mssjsg.pong.game.shape.Circle;
 import io.github.mssjsg.pong.game.shape.Rectangle;
 
 /**
  * Created by sing on 1/2/17.
  */
 
-public class RenderShapeSystem extends EntitySystem {
+public class RenderShapeSystem extends AbstractEntitySystem {
 
     private OrthographicCamera mCamera;
     private ShapeRenderer mShapeRenderer;
@@ -33,8 +33,8 @@ public class RenderShapeSystem extends EntitySystem {
             Position position = entity.getComponent(Position.class);
             mShapeRenderer.setColor(displayBody.color);
 
-            if (displayBody.shape instanceof Ellipse) {
-                renderEllipse(position, displayBody);
+            if (displayBody.shape instanceof Circle) {
+                renderClircle(position, displayBody);
             } else if (displayBody.shape instanceof Rectangle) {
                 renderRectangle(position, displayBody);
             }
@@ -42,14 +42,18 @@ public class RenderShapeSystem extends EntitySystem {
         mShapeRenderer.end();
     }
 
-    private void renderEllipse(Position position, DisplayBody displayBody) {
+    private void renderClircle(Position position, DisplayBody displayBody) {
 
-        mShapeRenderer.ellipse(position.x - displayBody.centerX, position.y - displayBody.centerY,
-                ((Ellipse)displayBody.shape).width, ((Ellipse)displayBody.shape).height, 100);
+        float radius = ((Circle)displayBody.shape).radius;
+
+        mShapeRenderer.circle(position.x - displayBody.centerX, position.y - displayBody.centerY,
+                radius, 100);
     }
 
     private void renderRectangle(Position position, DisplayBody displayBody) {
-        mShapeRenderer.rect(position.x - displayBody.centerX, position.y - displayBody.centerY,
-                ((Rectangle)displayBody.shape).width, ((Rectangle)displayBody.shape).height);
+        Rectangle rectangle = (Rectangle)displayBody.shape;
+
+        mShapeRenderer.rect(position.x - rectangle.width / 2 - displayBody.centerX, position.y - rectangle.height / 2 - displayBody.centerY,
+                ((Rectangle)displayBody.shape).width, rectangle.height);
     }
 }

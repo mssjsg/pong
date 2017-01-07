@@ -9,6 +9,7 @@ import io.github.mssjsg.pong.game.component.Component;
  */
 
 public class Entity {
+    public int tag;
     public ArrayMap<Class<? extends Component>, Component> mComponentArrayMap;
 
     public Entity() {

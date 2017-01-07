@@ -12,7 +12,7 @@ import io.github.mssjsg.pong.screen.Screens;
  * Created by sing on 12/31/16.
  */
 
-public class GameController extends ApplicationAdapter {
+public class ApplicationController extends ApplicationAdapter {
     private Screen mScreen;
 
     private ScreenManager mScreenManager = new ScreenManagerImpl();

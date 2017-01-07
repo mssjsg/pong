@@ -1,24 +1,24 @@
 package io.github.mssjsg.pong.game.component;
 
-import io.github.mssjsg.pong.game.shape.Shape;
+import io.github.mssjsg.pong.game.shape.BodyShape;
 import io.github.mssjsg.pong.util.Copyable;
 
 /**
  * Created by sing on 1/3/17.
  */
 
-public abstract class Body<B extends Body<B>> implements Component, Copyable<B> {
+public abstract class EntityBody<B extends EntityBody<B>> implements Component, Copyable<B> {
     public float centerX;
     public float centerY;
-    public Shape<?> shape;
+    public BodyShape<?> shape;
 
-    public Body() {
+    public EntityBody() {
     }
 
-    public Body(Body body) {
+    public EntityBody(EntityBody body) {
         centerX = body.centerX;
         centerY = body.centerY;
-        shape = (Shape<?>)body.shape.copy();
+        shape = (BodyShape<?>)body.shape.copy();
     }
 
     protected abstract B createObject();
@@ -28,7 +28,7 @@ public abstract class Body<B extends Body<B>> implements Component, Copyable<B> 
         B body = createObject();
         body.centerX = centerX;
         body.centerY = centerY;
-        body.shape = (Shape<?>)shape.copy();
+        body.shape = (BodyShape<?>)shape.copy();
         return body;
     }
 }

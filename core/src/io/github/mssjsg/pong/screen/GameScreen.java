@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 
-import io.github.mssjsg.pong.game.PongController;
+import io.github.mssjsg.pong.game.GameController;
 
 /**
  * Created by sing on 12/31/16.
@@ -14,12 +14,12 @@ import io.github.mssjsg.pong.game.PongController;
 public class GameScreen extends Screen {
 
     private GameInputProcessor mGameInputProcessor;
-    private PongController mPongController;
+    private GameController mGameController;
 
     public GameScreen(ScreenManager screenManager) {
         super(screenManager);
         mGameInputProcessor = new GameInputProcessor();
-        mPongController = new PongController();
+        mGameController = new GameController();
     }
 
     @Override
@@ -30,33 +30,31 @@ public class GameScreen extends Screen {
     @Override
     public void render(float delta) {
         super.render(delta);
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        mPongController.render(delta);
+        mGameController.render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        mPongController.resize(width, height);
+        mGameController.resize(width, height);
     }
 
     @Override
     public void pause() {
         super.pause();
-        mPongController.pause();
+        mGameController.pause();
     }
 
     @Override
     public void resume() {
         super.resume();
-        mPongController.resume();
+        mGameController.resume();
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        mPongController.dispose();
+        mGameController.dispose();
     }
 
     private void back() {

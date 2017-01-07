@@ -2,20 +2,18 @@ package io.github.mssjsg.pong.game.component;
 
 import com.badlogic.gdx.graphics.Color;
 
-import io.github.mssjsg.pong.game.shape.Shape;
-
 /**
  * Created by sing on 1/2/17.
  */
 
-public class DisplayBody extends Body<DisplayBody> {
+public class DisplayBody extends EntityBody<DisplayBody> {
 
     public Color color;
 
     public DisplayBody() {
     }
 
-    public DisplayBody(Body body) {
+    public DisplayBody(EntityBody body) {
         super(body);
     }
 
