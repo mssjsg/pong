@@ -45,7 +45,7 @@ public class PongEntityFactory {
         displayBody.centerY = 0;
         displayBody.color = color;
 
-        return new Entity()
+        return new Entity(Tags.TAG_BALL)
                 .addComponent(new Position(x, y))
                 .addComponent(displayBody)
                 .addComponent(new HitBody(displayBody));
@@ -72,29 +72,35 @@ public class PongEntityFactory {
         DisplayBody displayBody = new DisplayBody();
         displayBody.shape = rect;
 
+        int tag = Tags.TAG_NONE;
+
         switch (racketSide) {
             case LEFT:
                 displayBody.centerX = -thickness / 2;
                 displayBody.centerY = 0;
+                tag = Tags.TAG_RACKET_LEFT;
                 break;
             case RIGHT:
                 displayBody.centerX = thickness / 2;
                 displayBody.centerY = 0;
+                tag = Tags.TAG_RACKET_RIGHT;
                 break;
             case TOP:
                 displayBody.centerX = 0;
                 displayBody.centerY = thickness / 2;
+                tag = Tags.TAG_RACKET_TOP;
                 break;
             case BOTTOM:
                 displayBody.centerX = 0;
                 displayBody.centerY = -thickness / 2;
+                tag = Tags.TAG_RACKET_BOTTOM;
                 break;
         }
 
 
         displayBody.color = color;
 
-        return new Entity()
+        return new Entity(tag)
                 .addComponent(displayBody)
                 .addComponent(new Position(x, y))
                 .addComponent(new HitBody(displayBody));

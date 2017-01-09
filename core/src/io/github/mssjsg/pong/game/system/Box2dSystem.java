@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ArrayMap;
 
 import io.github.mssjsg.pong.game.Entity;
+import io.github.mssjsg.pong.game.Tags;
 import io.github.mssjsg.pong.game.component.HitBody;
 import io.github.mssjsg.pong.game.component.Position;
 import io.github.mssjsg.pong.game.shape.Circle;
@@ -42,6 +43,9 @@ public class Box2dSystem extends BaseSystem {
 
     public Box2dSystem(OrthographicCamera camera) {
         mWorld = new World(new Vector2(0, 0), true);
+
+        mWorld.setContactListener(new BodyContactListener());
+
         mCamera = camera;
         mDebugRenderer = new Box2DDebugRenderer();
         mBodyEntityMap = new ArrayMap<Body, Entity>();
@@ -85,7 +89,7 @@ public class Box2dSystem extends BaseSystem {
         Body body = mWorld.createBody(bodyDef);
 
         bodyDef.linearDamping = 0.0f;
-        bodyDef.angularDamping = 0.01f;
+        bodyDef.angularDamping = 0.0f;
 
         Shape shape;
 
@@ -109,6 +113,7 @@ public class Box2dSystem extends BaseSystem {
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         fixtureDef.restitution = 1;
+        fixtureDef.friction = 0;
 
         body.createFixture(fixtureDef);
         body.getMassData().center.set(hitBody.centerX * PX_TO_BOX, hitBody.centerY * PX_TO_BOX);
@@ -134,32 +139,58 @@ public class Box2dSystem extends BaseSystem {
         body.applyForce(forceX, forceY, pointX, pointY, true);
     }
 
-    private static class BodyEntityPair {
-        Body body;
-        Entity entity;
-
-        public BodyEntityPair(Body body, Entity entity) {
-            this.body = body;
-            this.entity = entity;
-        }
-    }
-
     private class BodyContactListener implements ContactListener {
 
         @Override
         public void beginContact(Contact contact) {
+
+        }
+
+        @Override
+        public void endContact(Contact contact) {
             Body body1 = contact.getFixtureA().getBody();
             Entity entity1 = mBodyEntityMap.get(body1);
 
             Body body2 = contact.getFixtureB().getBody();
             Entity entity2 = mBodyEntityMap.get(body2);
 
-            Entity ball;
-        }
+            Body ball = null;
+            Body racket;
+            int racketTag = Tags.TAG_NONE;
 
-        @Override
-        public void endContact(Contact contact) {
+            if (entity1.tag == Tags.TAG_BALL) {
+                ball = body1;
+                racket = body2;
+                racketTag = entity2.tag;
+            } else if (entity2.tag == Tags.TAG_BALL) {
+                ball = body2;
+                racket = body1;
+                racketTag = entity1.tag;
+            }
 
+            Vector2 position = contact.getWorldManifold().getNormal();
+
+            float force = 0f;
+            float forceX = 0;
+            float forceY = 0;
+
+            switch (racketTag) {
+                case Tags.TAG_RACKET_BOTTOM:
+                    forceY = force;
+                    break;
+                case Tags.TAG_RACKET_LEFT:
+                    forceX = force;
+                    break;
+                case Tags.TAG_RACKET_RIGHT:
+                    forceX = -force;
+                    break;
+                case Tags.TAG_RACKET_TOP:
+                    forceY = -force;
+                    break;
+            }
+            if (ball != null) {
+                ball.applyForce(forceX, forceY, position.x, position.y, true);
+            }
         }
 
         @Override

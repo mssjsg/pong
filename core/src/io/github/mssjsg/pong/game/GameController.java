@@ -70,7 +70,7 @@ public class GameController {
 
     private void startGame(StageInfo stageInfo) {
         setupStage(stageInfo);
-        mBox2dSystem.applyForce(mBalls.get(0), 5, 5);
+        mBox2dSystem.applyForce(mBalls.get(0), 2, 2);
     }
 
     private void setupStage(StageInfo stageInfo) {
@@ -92,7 +92,7 @@ public class GameController {
         mRackets.add(mPongEntityFactory.createRacket(PongEntityFactory.RacketSide.BOTTOM, length, thickness, centerX, stageInfo.stageHeight, Color.RED));
 
         for (Entity racket : mRackets) {
-            mBox2dSystem.addEntity(racket, true);
+            mBox2dSystem.addEntity(racket, false);
             mRenderShapeSystem.addEntity(racket);
         }
 

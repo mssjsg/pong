@@ -13,6 +13,11 @@ public class Entity {
     public ArrayMap<Class<? extends Component>, Component> mComponentArrayMap;
 
     public Entity() {
+        this(Tags.TAG_NONE);
+    }
+
+    public Entity(int tag) {
+        this.tag = tag;
         mComponentArrayMap = new ArrayMap<Class<? extends Component>, Component>();
     }
 
