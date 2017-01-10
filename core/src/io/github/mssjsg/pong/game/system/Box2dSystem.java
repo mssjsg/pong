@@ -139,6 +139,10 @@ public class Box2dSystem extends BaseSystem {
         body.applyForce(forceX, forceY, pointX, pointY, true);
     }
 
+    public Body getBody(Entity entity) {
+        return mEntityBodyMap.get(entity);
+    }
+
     private class BodyContactListener implements ContactListener {
 
         @Override

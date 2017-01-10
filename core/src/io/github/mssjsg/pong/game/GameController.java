@@ -18,9 +18,15 @@ import io.github.mssjsg.pong.game.system.RenderShapeSystem;
 
 public class GameController {
 
+    private static final int INDEX_LEFT = 0;
+    private static final int INDEX_RIGHT = 1;
+    private static final int INDEX_TOP = 3;
+    private static final int INDEX_BOTTOM = 2;
+
     private Entity mStage;
     private Array<Entity> mBalls;
     private Array<Entity> mRackets;
+    private int mKeysPressing;
     private int mKeysPressed;
 
     private OrthographicCamera mCamera;
@@ -40,6 +46,8 @@ public class GameController {
     private PongEntityFactory mPongEntityFactory;
 
     private float mTimeStep = 1/24f;
+
+    private float mSpeed = 2f;
 
     public GameController() {
 
@@ -62,7 +70,7 @@ public class GameController {
 
         mBalls = new Array<Entity>();
         mRackets = new Array<Entity>();
-        mKeysPressed = 0;
+        mKeysPressing = 0;
 
         mGameState.state = States.PLAYING;
         startGame(mStageInfo);
@@ -136,6 +144,13 @@ public class GameController {
         stepTime(delta);
     }
 
+    private void moveRackets(float x, float y) {
+        mBox2dSystem.getBody(mRackets.get(INDEX_TOP)).setLinearVelocity(x, 0);
+        mBox2dSystem.getBody(mRackets.get(INDEX_BOTTOM)).setLinearVelocity(x, 0);
+        mBox2dSystem.getBody(mRackets.get(INDEX_LEFT)).setLinearVelocity(0, y);
+        mBox2dSystem.getBody(mRackets.get(INDEX_RIGHT)).setLinearVelocity(0, y);
+    }
+
     public void update(float delta) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -144,6 +159,37 @@ public class GameController {
 //        mSpriteBatch.begin();
 //        mSpriteBatch.draw(mLogo, (mStageInfo.stageWidth - mLogo.getWidth()) / 2, (mStageInfo.stageHeight - mLogo.getHeight()) / 2);
 //        mSpriteBatch.end();
+
+        mKeysPressed = 0;
+        int action = Actions.STAY;
+
+        if (isPressingKey(GameKeys.KEY_RIGHT)) {
+            action = Actions.MOVE_RIGHT;
+        } else if (isPressingKey(GameKeys.KEY_LEFT)) {
+            action = Actions.MOVE_LEFT;
+        } else if (isPressingKey(GameKeys.KEY_UP)) {
+            action = Actions.MOVE_UP;
+        } else if (isPressingKey(GameKeys.KEY_DOWN)) {
+            action = Actions.MOVE_DOWN;
+        }
+
+        switch (action) {
+            case Actions.STAY:
+                moveRackets(0, 0);
+                break;
+            case Actions.MOVE_DOWN:
+                moveRackets(0, -mSpeed);
+                break;
+            case Actions.MOVE_LEFT:
+                moveRackets(-mSpeed, -0);
+                break;
+            case Actions.MOVE_RIGHT:
+                moveRackets(mSpeed, 0);
+                break;
+            case Actions.MOVE_UP:
+                moveRackets(0, mSpeed);
+                break;
+        }
 
         mRenderShapeSystem.update(delta);
         mBox2dSystem.update(delta);
@@ -178,15 +224,16 @@ public class GameController {
         mLogo.dispose();
     }
 
-    private boolean isKeyPressed(int key) {
-        return (mKeysPressed & key) > 0;
+    private boolean isPressingKey(int key) {
+        return (mKeysPressing & key) > 0;
     }
 
     public void press(int key) {
-        mKeysPressed |= key;
+        mKeysPressing |= key;
     }
 
     public void unpress(int key) {
-        mKeysPressed &= ~key;
+        mKeysPressing &= ~key;
+        mKeysPressed |= key;
     }
 }

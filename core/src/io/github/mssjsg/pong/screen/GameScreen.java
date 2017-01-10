@@ -1,11 +1,10 @@
 package io.github.mssjsg.pong.screen;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
 
 import io.github.mssjsg.pong.game.GameController;
+import io.github.mssjsg.pong.game.GameKeys;
 
 /**
  * Created by sing on 12/31/16.
@@ -67,12 +66,16 @@ public class GameScreen extends Screen {
         public boolean keyDown(int keycode) {
             switch (keycode) {
                 case Input.Keys.UP:
+                    mGameController.press(GameKeys.KEY_UP);
                     return true;
                 case Input.Keys.DOWN:
+                    mGameController.press(GameKeys.KEY_DOWN);
                     return true;
                 case Input.Keys.LEFT:
+                    mGameController.press(GameKeys.KEY_LEFT);
                     return true;
                 case Input.Keys.RIGHT:
+                    mGameController.press(GameKeys.KEY_RIGHT);
                     return true;
             }
             return false;
@@ -81,6 +84,18 @@ public class GameScreen extends Screen {
         @Override
         public boolean keyUp(int keycode) {
             switch (keycode) {
+                case Input.Keys.UP:
+                    mGameController.unpress(GameKeys.KEY_UP);
+                    return true;
+                case Input.Keys.DOWN:
+                    mGameController.unpress(GameKeys.KEY_DOWN);
+                    return true;
+                case Input.Keys.LEFT:
+                    mGameController.unpress(GameKeys.KEY_LEFT);
+                    return true;
+                case Input.Keys.RIGHT:
+                    mGameController.unpress(GameKeys.KEY_RIGHT);
+                    return true;
                 case Input.Keys.BACK:
                 case Input.Keys.BACKSPACE:
                     back();
