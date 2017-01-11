@@ -47,7 +47,7 @@ public class GameController {
 
     private float mTimeStep = 1/24f;
 
-    private float mSpeed = 2f;
+    private float mSpeed = 5f;
 
     public GameController() {
 
@@ -91,7 +91,7 @@ public class GameController {
         Entity ball = mPongEntityFactory.createBall(10, centerX, centerY, Color.YELLOW);
         mBalls.add(ball);
 
-        float length = 100;
+        float length = 200;
         float thickness = 10;
 
         mRackets.add(mPongEntityFactory.createRacket(PongEntityFactory.RacketSide.LEFT, length, thickness, 0, centerY, Color.RED));
@@ -160,36 +160,28 @@ public class GameController {
 //        mSpriteBatch.draw(mLogo, (mStageInfo.stageWidth - mLogo.getWidth()) / 2, (mStageInfo.stageHeight - mLogo.getHeight()) / 2);
 //        mSpriteBatch.end();
 
+        float velocityX = 0;
+        float velocityY = 0;
+
         mKeysPressed = 0;
-        int action = Actions.STAY;
 
         if (isPressingKey(GameKeys.KEY_RIGHT)) {
-            action = Actions.MOVE_RIGHT;
-        } else if (isPressingKey(GameKeys.KEY_LEFT)) {
-            action = Actions.MOVE_LEFT;
-        } else if (isPressingKey(GameKeys.KEY_UP)) {
-            action = Actions.MOVE_UP;
-        } else if (isPressingKey(GameKeys.KEY_DOWN)) {
-            action = Actions.MOVE_DOWN;
+            velocityX += mSpeed;
         }
 
-        switch (action) {
-            case Actions.STAY:
-                moveRackets(0, 0);
-                break;
-            case Actions.MOVE_DOWN:
-                moveRackets(0, -mSpeed);
-                break;
-            case Actions.MOVE_LEFT:
-                moveRackets(-mSpeed, -0);
-                break;
-            case Actions.MOVE_RIGHT:
-                moveRackets(mSpeed, 0);
-                break;
-            case Actions.MOVE_UP:
-                moveRackets(0, mSpeed);
-                break;
+        if (isPressingKey(GameKeys.KEY_LEFT)) {
+            velocityX -= mSpeed;
         }
+
+        if (isPressingKey(GameKeys.KEY_UP)) {
+            velocityY += mSpeed;
+        }
+
+        if (isPressingKey(GameKeys.KEY_DOWN)) {
+            velocityY -= mSpeed;
+        }
+
+        moveRackets(velocityX, velocityY);
 
         mRenderShapeSystem.update(delta);
         mBox2dSystem.update(delta);
