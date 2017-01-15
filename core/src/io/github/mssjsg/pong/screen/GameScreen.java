@@ -5,11 +5,15 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
@@ -23,6 +27,7 @@ import io.github.mssjsg.pong.game.GameKeys;
 public class GameScreen extends Screen implements GameController.GameView {
 
     private static final String STYLE_DEFAULT = "default";
+    private static final String STYLE_GAMEOVER = "gameOver";
     private static final int UI_WIDTH = 500;
 
     private Stage mStage;
@@ -95,7 +100,6 @@ public class GameScreen extends Screen implements GameController.GameView {
         mStage.addActor(stack);
         stack.setSize(mStage.getWidth(), mStage.getHeight());
         stack.add(layerControls);
-        stack.setColor(Color.BLUE);
     }
 
     private Table buildControlsLayer() {
@@ -103,11 +107,30 @@ public class GameScreen extends Screen implements GameController.GameView {
 
         Table table = new Table();
         table.top();
-        table.setColor(Color.BLUE);
 
         mScore = new Label("0", skin, STYLE_DEFAULT);
         mScore.setFontScale(2);
-        table.add(mScore).align(Align.top).fillX().pad(20);
+        table.add(mScore).align(Align.top).fillX().padTop(20);
+
+        mStatus = new Label("Game Over", skin, STYLE_GAMEOVER);
+        mStatus.setFontScale(2);
+        mStatus.setVisible(false);
+        table.row();
+        table.add(mStatus).fillX().padTop(130);
+
+        mBtnRetry = new Label("Retry", skin, STYLE_GAMEOVER);
+        mBtnRetry.setFontScale(1.5f);
+        mBtnRetry.setVisible(false);
+        table.row();
+        table.add(mBtnRetry).align(Align.center).padTop(80);
+
+        mBtnRetry.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                resetGame();
+            }
+        });
 
         return table;
     }
@@ -115,6 +138,20 @@ public class GameScreen extends Screen implements GameController.GameView {
     @Override
     public void showScore(int score) {
         mScore.setText(String.valueOf(score));
+    }
+
+    @Override
+    public void showGameOver(int score) {
+        mScore.setText(String.valueOf(score));
+        mStatus.setText("Game Over");
+        mStatus.setVisible(true);
+        mBtnRetry.setVisible(true);
+    }
+
+    private void resetGame() {
+        mStatus.setVisible(false);
+        mBtnRetry.setVisible(false);
+        mGameController.restartStage();
     }
 
     private class GameInputProcessor implements InputProcessor {
@@ -168,27 +205,27 @@ public class GameScreen extends Screen implements GameController.GameView {
 
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            return false;
+            return mStage.touchDown(screenX, screenY, pointer, button);
         }
 
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            return false;
+            return mStage.touchUp(screenX, screenY, pointer, button);
         }
 
         @Override
         public boolean touchDragged(int screenX, int screenY, int pointer) {
-            return false;
+            return mStage.touchDragged(screenX, screenY, pointer);
         }
 
         @Override
         public boolean mouseMoved(int screenX, int screenY) {
-            return false;
+            return mStage.mouseMoved(screenX, screenY);
         }
 
         @Override
         public boolean scrolled(int amount) {
-            return false;
+            return mStage.scrolled(amount);
         }
     }
 }

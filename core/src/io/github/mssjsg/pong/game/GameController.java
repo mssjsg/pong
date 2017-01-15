@@ -7,7 +7,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.Random;
 
 import io.github.mssjsg.pong.game.system.Box2dSystem;
 import io.github.mssjsg.pong.game.system.RenderShapeSystem;
@@ -51,7 +55,15 @@ public class GameController implements Box2dSystem.OnRacketHitBallListener {
 
     private GameView mGameView;
 
+    private Rectangle mStageBound;
+
+    private float accumulator = 0;
+
+    private Random mRandom = new Random();
+
     public GameController(GameView gameView) {
+
+        mStageBound = new Rectangle();
 
         mGameView = gameView;
 
@@ -85,7 +97,20 @@ public class GameController implements Box2dSystem.OnRacketHitBallListener {
 
     private void startGame(StageInfo stageInfo) {
         setupStage(stageInfo);
-        mBox2dSystem.applyForce(mBalls.get(0), 1, 1);
+
+        pushBallRandom();
+    }
+
+    private void pushBallRandom() {
+
+        float angle = (float) (mRandom.nextInt(360) / 180f * Math.PI);
+        float force = 2f;
+
+        float x = (float) (Math.cos(angle) * force);
+        float y = (float) (Math.sin(angle) * force);
+
+        mBox2dSystem.getBody(mBalls.get(0)).setLinearVelocity(0, 0);
+        mBox2dSystem.applyForce(mBalls.get(0), x, y);
     }
 
     private void setupStage(StageInfo stageInfo) {
@@ -113,7 +138,10 @@ public class GameController implements Box2dSystem.OnRacketHitBallListener {
 
         mBox2dSystem.addEntity(ball, true);
         mRenderShapeSystem.addEntity(ball);
+
+        mStageBound.set(0, 0, (stageInfo.stageWidth + 20) * Box2dSystem.PX_TO_BOX, (stageInfo.stageHeight + 20) * Box2dSystem.PX_TO_BOX);
     }
+
 
     private void updateCameras(int screenWidth, int screenHeight) {
 
@@ -134,7 +162,6 @@ public class GameController implements Box2dSystem.OnRacketHitBallListener {
         mBoxCamera.update();
     }
 
-
     private void resumeGame() {
         mGameState.state = States.PLAYING;
     }
@@ -151,11 +178,28 @@ public class GameController implements Box2dSystem.OnRacketHitBallListener {
         stepTime(delta);
     }
 
-    private void moveRackets(float x, float y) {
-        mBox2dSystem.getBody(mRackets.get(INDEX_TOP)).setLinearVelocity(x, 0);
-        mBox2dSystem.getBody(mRackets.get(INDEX_BOTTOM)).setLinearVelocity(x, 0);
-        mBox2dSystem.getBody(mRackets.get(INDEX_LEFT)).setLinearVelocity(0, y);
-        mBox2dSystem.getBody(mRackets.get(INDEX_RIGHT)).setLinearVelocity(0, y);
+    private void updateState(float velocityX, float velocityY) {
+
+        Body topRacket = mBox2dSystem.getBody(mRackets.get(INDEX_TOP));
+        Body bottomRacket = mBox2dSystem.getBody(mRackets.get(INDEX_BOTTOM));
+        Body leftRacket = mBox2dSystem.getBody(mRackets.get(INDEX_LEFT));
+        Body rightRacket = mBox2dSystem.getBody(mRackets.get(INDEX_RIGHT));
+
+        topRacket.setLinearVelocity(velocityX, 0);
+        bottomRacket.setLinearVelocity(velocityX, 0);
+        leftRacket.setLinearVelocity(0, velocityY);
+        rightRacket.setLinearVelocity(0, velocityY);
+
+        Body ball = mBox2dSystem.getBody(mBalls.get(0));
+
+        if (mGameState.state == States.PLAYING && !mStageBound.contains(ball.getPosition())) {
+            gameOver();
+        }
+    }
+
+    private void gameOver() {
+        mGameState.state = States.GAME_OVER;
+        mGameView.showGameOver(mGameState.score);
     }
 
     public void update(float delta) {
@@ -188,13 +232,11 @@ public class GameController implements Box2dSystem.OnRacketHitBallListener {
             velocityY -= mSpeed;
         }
 
-        moveRackets(velocityX, velocityY);
+        updateState(velocityX, velocityY);
 
         mRenderShapeSystem.update(delta);
         mBox2dSystem.update(delta);
     }
-
-    private float accumulator = 0;
 
     private void stepTime(float deltaTime) {
         // fixed time step
@@ -242,7 +284,26 @@ public class GameController implements Box2dSystem.OnRacketHitBallListener {
         mGameView.showScore(mGameState.score);
     }
 
+    private void setEntityPosition(Entity entity, float x, float y) {
+        mBox2dSystem.getBody(entity).setTransform(x * Box2dSystem.PX_TO_BOX, y * Box2dSystem.PX_TO_BOX, 0);
+    }
+
+    public void restartStage() {
+        mGameState.score = 0;
+        mGameState.state = States.IDLE;
+
+        float centerX = mStageInfo.stageWidth / 2f;
+        float centerY = mStageInfo.stageHeight / 2f;
+
+        setEntityPosition(mBalls.get(0), centerX, centerY);
+
+        pushBallRandom();
+        resumeGame();
+    }
+
     public interface GameView {
         void showScore(int score);
+
+        void showGameOver(int score);
     }
 }
