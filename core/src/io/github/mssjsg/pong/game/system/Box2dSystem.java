@@ -41,7 +41,9 @@ public class Box2dSystem extends BaseSystem {
     private ArrayMap<Body, Entity> mBodyEntityMap;
     private ArrayMap<Entity, Body> mEntityBodyMap;
 
-    public Box2dSystem(OrthographicCamera camera) {
+    private OnRacketHitBallListener mOnRacketHitBallListener;
+
+    public Box2dSystem(OrthographicCamera camera, OnRacketHitBallListener onRacketHitBallListener) {
         mWorld = new World(new Vector2(0, 0), true);
 
         mWorld.setContactListener(new BodyContactListener());
@@ -50,6 +52,8 @@ public class Box2dSystem extends BaseSystem {
         mDebugRenderer = new Box2DDebugRenderer();
         mBodyEntityMap = new ArrayMap<Body, Entity>();
         mEntityBodyMap = new ArrayMap<Entity, Body>();
+
+        mOnRacketHitBallListener = onRacketHitBallListener;
     }
 
     @Override
@@ -159,41 +163,25 @@ public class Box2dSystem extends BaseSystem {
             Entity entity2 = mBodyEntityMap.get(body2);
 
             Body ball = null;
-            Body racket;
             int racketTag = Tags.TAG_NONE;
 
             if (entity1.tag == Tags.TAG_BALL) {
                 ball = body1;
-                racket = body2;
                 racketTag = entity2.tag;
             } else if (entity2.tag == Tags.TAG_BALL) {
                 ball = body2;
-                racket = body1;
                 racketTag = entity1.tag;
             }
 
-            Vector2 position = contact.getWorldManifold().getNormal();
-
-            float force = 0f;
-            float forceX = 0;
-            float forceY = 0;
-
-            switch (racketTag) {
-                case Tags.TAG_RACKET_BOTTOM:
-                    forceY = force;
-                    break;
-                case Tags.TAG_RACKET_LEFT:
-                    forceX = force;
-                    break;
-                case Tags.TAG_RACKET_RIGHT:
-                    forceX = -force;
-                    break;
-                case Tags.TAG_RACKET_TOP:
-                    forceY = -force;
-                    break;
-            }
             if (ball != null) {
-                ball.applyForce(forceX, forceY, position.x, position.y, true);
+                switch (racketTag) {
+                    case Tags.TAG_RACKET_BOTTOM:
+                    case Tags.TAG_RACKET_LEFT:
+                    case Tags.TAG_RACKET_RIGHT:
+                    case Tags.TAG_RACKET_TOP:
+                        mOnRacketHitBallListener.onRacketHitBall(racketTag);
+                        break;
+                }
             }
         }
 
@@ -206,5 +194,9 @@ public class Box2dSystem extends BaseSystem {
         public void postSolve(Contact contact, ContactImpulse impulse) {
 
         }
+    }
+
+    public interface OnRacketHitBallListener {
+        void onRacketHitBall(int tag);
     }
 }

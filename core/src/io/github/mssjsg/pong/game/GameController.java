@@ -16,7 +16,7 @@ import io.github.mssjsg.pong.game.system.RenderShapeSystem;
  * Created by sing on 1/1/17.
  */
 
-public class GameController {
+public class GameController implements Box2dSystem.OnRacketHitBallListener {
 
     private static final int INDEX_LEFT = 0;
     private static final int INDEX_RIGHT = 1;
@@ -31,6 +31,7 @@ public class GameController {
 
     private OrthographicCamera mCamera;
     private OrthographicCamera mBoxCamera;
+
     private SpriteBatch mSpriteBatch;
     private ShapeRenderer mShapeRenderer;
 
@@ -38,7 +39,6 @@ public class GameController {
     private Texture mLogo;
 
     private GameState mGameState;
-
 
     private RenderShapeSystem mRenderShapeSystem; //render shapes
     private Box2dSystem mBox2dSystem; //physics
@@ -49,7 +49,11 @@ public class GameController {
 
     private float mSpeed = 5f;
 
-    public GameController() {
+    private GameView mGameView;
+
+    public GameController(GameView gameView) {
+
+        mGameView = gameView;
 
         mPongEntityFactory = new PongEntityFactory();
         mGameState = new GameState();
@@ -62,11 +66,14 @@ public class GameController {
 
         mLogo = new Texture("badlogic.jpg");
 
-        initCamera(mStageInfo.stageWidth / 2, mStageInfo.stageHeight / 2);
+        mCamera = new OrthographicCamera();
+        mBoxCamera = new OrthographicCamera();
+
+        updateCameras(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         //init systems
         mRenderShapeSystem = new RenderShapeSystem(mCamera, mShapeRenderer);
-        mBox2dSystem = new Box2dSystem(mBoxCamera);
+        mBox2dSystem = new Box2dSystem(mBoxCamera, this);
 
         mBalls = new Array<Entity>();
         mRackets = new Array<Entity>();
@@ -78,7 +85,7 @@ public class GameController {
 
     private void startGame(StageInfo stageInfo) {
         setupStage(stageInfo);
-        mBox2dSystem.applyForce(mBalls.get(0), 2, 2);
+        mBox2dSystem.applyForce(mBalls.get(0), 1, 1);
     }
 
     private void setupStage(StageInfo stageInfo) {
@@ -108,15 +115,21 @@ public class GameController {
         mRenderShapeSystem.addEntity(ball);
     }
 
-    private void initCamera(float cameraPosX, float cameraPosY) {
-        float width = mStageInfo.stageWidth;
-        float height = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth() * width;
+    private void updateCameras(int screenWidth, int screenHeight) {
 
-        mCamera = new OrthographicCamera(width, height);
+        float cameraPosX = mStageInfo.stageWidth / 2;
+        float cameraPosY = mStageInfo.stageHeight / 2;
+
+        float width = mStageInfo.stageWidth;
+        float height = (float)screenHeight / (float)screenWidth * width;
+
+        mCamera.viewportWidth = width;
+        mCamera.viewportHeight = height;
         mCamera.position.set(cameraPosX, cameraPosY, 0);
         mCamera.update();
 
-        mBoxCamera = new OrthographicCamera(width * Box2dSystem.PX_TO_BOX, height * Box2dSystem.PX_TO_BOX);
+        mBoxCamera.viewportWidth = width * Box2dSystem.PX_TO_BOX;
+        mBoxCamera.viewportHeight = height * Box2dSystem.PX_TO_BOX;
         mBoxCamera.position.set(cameraPosX * Box2dSystem.PX_TO_BOX, cameraPosY * Box2dSystem.PX_TO_BOX, 0);
         mBoxCamera.update();
     }
@@ -131,13 +144,7 @@ public class GameController {
     }
 
     public void resize(int width, int height) {
-        mCamera.viewportWidth = mStageInfo.stageWidth;
-        mCamera.viewportHeight = (float)height / (float) width * mStageInfo.stageWidth;
-        mCamera.update();
-
-        mBoxCamera.viewportWidth = mStageInfo.stageWidth * Box2dSystem.PX_TO_BOX;
-        mBoxCamera.viewportHeight = (float)height / (float) width * mStageInfo.stageWidth * Box2dSystem.PX_TO_BOX;
-        mBoxCamera.update();
+        updateCameras(width, height);
     }
 
     public void render(float delta) {
@@ -227,5 +234,15 @@ public class GameController {
     public void unpress(int key) {
         mKeysPressing &= ~key;
         mKeysPressed |= key;
+    }
+
+    @Override
+    public void onRacketHitBall(int tag) {
+        mGameState.score++;
+        mGameView.showScore(mGameState.score);
+    }
+
+    public interface GameView {
+        void showScore(int score);
     }
 }
